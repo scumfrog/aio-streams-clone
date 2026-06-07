@@ -22,7 +22,14 @@ export async function initDb(): Promise<void> {
 
   pool = new Pool({
     connectionString: config.databaseUrl,
-    ssl: config.nodeEnv === 'production' ? { rejectUnauthorized: false } : false,
+    // Skip SSL for local/Docker hosts (no dots in hostname = Docker service name)
+    ssl: (() => {
+      try {
+        const host = new URL(config.databaseUrl!).hostname;
+        const isLocal = host === 'localhost' || host === '127.0.0.1' || !host.includes('.');
+        return isLocal ? false : { rejectUnauthorized: false };
+      } catch { return { rejectUnauthorized: false }; }
+    })(),
     max: 10,
     idleTimeoutMillis: 30_000,
   });

@@ -1,0 +1,55 @@
+name: aioclone
+
+services:
+  app:
+    build: .
+    container_name: aioclone-app
+    restart: unless-stopped
+    expose:
+      - "3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://aioclone:aioclone@postgres:5432/aioclone
+      - STREAM_CACHE_TTL=300
+      - MAX_ADDON_TIMEOUT=20000
+      - MAX_STREAMS_PER_ADDON=50
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:3000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - local_proxy
+      - internal
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: aioclone-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=aioclone
+      - POSTGRES_USER=aioclone
+      - POSTGRES_PASSWORD=aioclone
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aioclone -d aioclone"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+
+volumes:
+  postgres_data:
+
+networks:
+  local_proxy:
+    external: true
+  internal:
+    driver: bridge

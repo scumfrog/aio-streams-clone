@@ -18,6 +18,7 @@ RUN pnpm build
 
 # ── Stage 3: lean production image ────────────────────────────────────────────
 FROM node:22-alpine AS runner
+RUN apk add --no-cache curl
 WORKDIR /app
 
 # Package manifests (needed for pnpm module resolution)
