@@ -1,0 +1,21 @@
+{
+  "name": "aio-streams-clone",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Improved AIOStreams clone – one addon to rule them all",
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter @aio/server dev\" \"pnpm --filter @aio/frontend dev\"",
+    "build": "pnpm --filter @aio/core build && pnpm --filter @aio/server build && pnpm --filter @aio/frontend build",
+    "start": "node packages/server/dist/server.js",
+    "typecheck": "pnpm -r typecheck",
+    "clean": "pnpm -r exec rm -rf dist node_modules"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}
