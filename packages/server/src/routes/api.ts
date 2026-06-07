@@ -46,6 +46,7 @@ const configBodySchema = z.object({
     maxSizeGb: z.number().positive().optional(),
     minSeeders: z.number().int().min(0).optional(),
     requireCached: z.boolean().optional(),
+    cachedFirst: z.boolean().optional(),
     excludeKeywords: z.array(z.string()).optional(),
     includeKeywords: z.array(z.string()).optional(),
     excludeCodecs: z.array(z.string()).optional(),
