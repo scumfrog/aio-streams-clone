@@ -118,8 +118,12 @@ function parseSeeders(text: string): number | undefined {
 // ─── Cached ───────────────────────────────────────────────────────────────────
 
 function parseCached(text: string): boolean {
-  return /\b(cached|RD\+|AD\+|PM\+|TB\+|\+✓|⚡)\b/i.test(text) ||
-    /\[RD\]|\[AD\]|\[PM\]|\[TB\]/.test(text);
+  // [RD+], [AD+], [PM+], [TB+] — Torrentio cached stream format
+  // [RD], [AD] etc. — other debrid indicators
+  // ⚡, +✓ — generic cached symbols
+  return /\[(RD|AD|PM|TB|OC)\+?\]/.test(text) ||
+    /\b(cached|⚡|\+✓)\b/i.test(text) ||
+    /\bRD\+\s|AD\+\s|PM\+\s|TB\+\s/.test(text);
 }
 
 // ─── Languages ────────────────────────────────────────────────────────────────

@@ -27,8 +27,8 @@ export async function fetchStreamsFromAddon(
   id: string,
   timeout = config.maxAddonTimeout,
 ): Promise<AddonFetchResult> {
-  const normalised = baseUrl.replace(/\/+$/, '');
-  // If the URL already ends in /stream or similar, use as-is; otherwise append
+  // Encode pipe characters (used by Torrentio-style config URLs, invalid per RFC 3986)
+  const normalised = baseUrl.replace(/\/+$/, '').replace(/\|/g, '%7C');
   const streamUrl = normalised.endsWith('/stream')
     ? `${normalised}/${type}/${id}.json`
     : `${normalised}/stream/${type}/${id}.json`;

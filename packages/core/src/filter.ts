@@ -22,8 +22,8 @@ export function filterStreams(streams: Stream[], config: FilterConfig): Stream[]
       if (!config.resolutions.includes(s.resolution)) return false;
     }
 
-    // Minimum resolution threshold
-    if (config.minResolution) {
+    // Minimum resolution threshold (Unknown resolution passes — parser couldn't detect it)
+    if (config.minResolution && s.resolution !== 'Unknown') {
       const streamRank = RESOLUTION_ORDER[s.resolution];
       const minRank = RESOLUTION_ORDER[config.minResolution];
       if (streamRank < minRank) return false;
