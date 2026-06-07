@@ -121,8 +121,10 @@ function parseCached(text: string): boolean {
   // [RD+], [AD+], [PM+], [TB+] — Torrentio cached stream format
   // [RD], [AD] etc. — other debrid indicators
   // ⚡, +✓ — generic cached symbols
-  return /\[(RD|AD|PM|TB|OC)\+?\]/.test(text) ||
-    /\b(cached|⚡|\+✓)\b/i.test(text) ||
+  // [RD+], [RD⚡], [AD+], [PM+], [TB+] — Torrentio / Comet cached format
+  return /\[(RD|AD|PM|TB|OC)[+⚡✓]?\]/.test(text) ||
+    /⚡/.test(text) ||
+    /\b(cached|\+✓)\b/i.test(text) ||
     /\bRD\+\s|AD\+\s|PM\+\s|TB\+\s/.test(text);
 }
 
