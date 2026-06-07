@@ -31,7 +31,7 @@ FROM node:22-alpine AS runner
 RUN npm install -g pnpm@latest
 WORKDIR /app
 
-COPY package.json pnpm-workspace.yaml ./
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY packages/core/package.json packages/core/package.json
 COPY packages/server/package.json packages/server/package.json
 COPY packages/frontend/package.json packages/frontend/package.json
