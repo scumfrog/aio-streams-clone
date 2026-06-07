@@ -122,18 +122,26 @@ export interface StremiosCatalog {
 
 // ─── Marketplace ──────────────────────────────────────────────────────────────
 
+export type MarketplaceCategory = 'popular' | 'debrid' | 'torrents' | 'usenet' | 'anime' | 'self-hosted';
+
 export interface MarketplaceAddon {
   id: string;
   name: string;
   description: string;
+  /** Base URL – empty string when URL is built from a setupTemplate */
   url: string;
   logo?: string;
   tags: string[];
+  category: MarketplaceCategory;
   requiresDebrid: boolean;
-  setupTemplate?: string;  // URL template with {PROVIDER_KEY} placeholder
+  /** Link to the addon's own configure page (opens in new tab) */
+  configureUrl?: string;
+  /** URL template – {FIELD_KEY} placeholders get replaced by user input */
+  setupTemplate?: string;
   setupFields?: Array<{
     key: string;
     label: string;
+    hint?: string;
     type: 'text' | 'password' | 'select';
     options?: string[];
   }>;

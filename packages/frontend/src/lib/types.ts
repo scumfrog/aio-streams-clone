@@ -55,6 +55,8 @@ export interface UserConfigRow {
   updated_at: string;
 }
 
+export type MarketplaceCategory = 'popular' | 'debrid' | 'torrents' | 'usenet' | 'anime' | 'self-hosted';
+
 export interface MarketplaceAddon {
   id: string;
   name: string;
@@ -62,11 +64,14 @@ export interface MarketplaceAddon {
   url: string;
   logo?: string;
   tags: string[];
+  category: MarketplaceCategory;
   requiresDebrid: boolean;
+  configureUrl?: string;
   setupTemplate?: string;
   setupFields?: Array<{
     key: string;
     label: string;
+    hint?: string;
     type: 'text' | 'password' | 'select';
     options?: string[];
   }>;
