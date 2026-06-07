@@ -3,13 +3,14 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import {
   ChevronLeft, ChevronRight, Check, Copy, ExternalLink, BarChart3,
-  Layers, Filter, ArrowUpDown, Download, Loader2
+  Layers, Filter, ArrowUpDown, Download, Loader2, Info, X,
 } from 'lucide-react';
 import { api, buildInstallUrl, buildManifestUrl } from '../lib/api';
 import type { UserConfig, AddonConfig, FilterConfig, SortConfig, SortCriterion } from '../lib/types';
 import AddonManager from '../components/AddonManager';
 import FilterPanel from '../components/FilterPanel';
 import SortPanel from '../components/SortPanel';
+import QuickStart from '../components/QuickStart';
 
 // ─── Step definitions ─────────────────────────────────────────────────────────
 
@@ -43,6 +44,8 @@ export default function Configure() {
   const [config, setConfig] = useState<UserConfig>(DEFAULT_CONFIG);
   const [savedId, setSavedId] = useState<string | null>(userId);
   const [copied, setCopied] = useState<'install' | 'manifest' | null>(null);
+  const [showQuickStart, setShowQuickStart] = useState(!userId);
+  const [presetTip, setPresetTip] = useState<string | null>(null);
 
   // Load existing config if editing
   const { isLoading, data: existingRow } = useQuery({
@@ -86,6 +89,18 @@ export default function Configure() {
     const prevStep = STEPS[currentStepIndex - 1];
     if (prevStep) setStep(prevStep.id);
   }, [currentStepIndex]);
+
+  const handlePresetApply = (
+    addons: AddonConfig[],
+    filters: FilterConfig,
+    sorting: SortConfig,
+    maxResults: number,
+    tip?: string,
+  ) => {
+    setConfig(c => ({ ...c, addons, filters, sorting, maxResults }));
+    setShowQuickStart(false);
+    if (tip) setPresetTip(tip);
+  };
 
   const copyToClipboard = async (text: string, type: 'install' | 'manifest') => {
     await navigator.clipboard.writeText(text);
@@ -178,10 +193,30 @@ export default function Configure() {
         )}
 
         {step === 'addons' && (
-          <AddonManager
-            addons={config.addons}
-            onChange={addons => setConfig(c => ({ ...c, addons }))}
-          />
+          <>
+            {showQuickStart && (
+              <QuickStart
+                onApply={handlePresetApply}
+                onSkip={() => setShowQuickStart(false)}
+              />
+            )}
+            {presetTip && (
+              <div className="flex items-start gap-3 px-4 py-3 bg-brand-900/30 border border-brand-800/50 rounded-xl mb-5 text-sm text-brand-200">
+                <Info size={15} className="shrink-0 mt-0.5 text-brand-400" />
+                <span className="flex-1">{presetTip}</span>
+                <button
+                  onClick={() => setPresetTip(null)}
+                  className="shrink-0 text-brand-500 hover:text-brand-300 transition-colors"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            )}
+            <AddonManager
+              addons={config.addons}
+              onChange={addons => setConfig(c => ({ ...c, addons }))}
+            />
+          </>
         )}
 
         {step === 'filters' && (

@@ -40,12 +40,12 @@ export const MARKETPLACE_ADDONS: MarketplaceAddon[] = [
   {
     id: 'torrentio-rd',
     name: 'Torrentio + Real-Debrid',
-    description: 'Torrentio pre-configured for Real-Debrid. Enter your RD API key and get instant cached streams.',
+    description: 'Torrentio optimised for Real-Debrid — 12 top trackers (YTS, RARBG, 1337x…), sorted by quality+size, 20 results per query.',
     url: '',
     category: 'debrid',
     tags: ['torrents', 'real-debrid', 'popular'],
     requiresDebrid: true,
-    setupTemplate: 'https://torrentio.strem.fun/realdebrid={RD_API_KEY}',
+    setupTemplate: 'https://torrentio.strem.fun/providers=yts,eztv,rarbg,1337x,thepiratebay,kickasstorrents,torrentgalaxy,magnetdl,horriblesubs,nyaasi,tokyotosho,anidex|sort=qualitysize|limit=20|realdebrid={RD_API_KEY}',
     setupFields: [
       {
         key: 'RD_API_KEY',
@@ -102,7 +102,7 @@ export const MARKETPLACE_ADDONS: MarketplaceAddon[] = [
     category: 'debrid',
     tags: ['torrents', 'alldebrid'],
     requiresDebrid: true,
-    setupTemplate: 'https://torrentio.strem.fun/alldebrid={AD_API_KEY}',
+    setupTemplate: 'https://torrentio.strem.fun/providers=yts,eztv,rarbg,1337x,thepiratebay,kickasstorrents,torrentgalaxy,magnetdl,horriblesubs,nyaasi,tokyotosho,anidex|sort=qualitysize|limit=20|alldebrid={AD_API_KEY}',
     setupFields: [
       {
         key: 'AD_API_KEY',
@@ -123,7 +123,7 @@ export const MARKETPLACE_ADDONS: MarketplaceAddon[] = [
     category: 'debrid',
     tags: ['torrents', 'premiumize'],
     requiresDebrid: true,
-    setupTemplate: 'https://torrentio.strem.fun/premiumize={PM_API_KEY}',
+    setupTemplate: 'https://torrentio.strem.fun/providers=yts,eztv,rarbg,1337x,thepiratebay,kickasstorrents,torrentgalaxy,magnetdl,horriblesubs,nyaasi,tokyotosho,anidex|sort=qualitysize|limit=20|premiumize={PM_API_KEY}',
     setupFields: [
       {
         key: 'PM_API_KEY',
@@ -144,7 +144,7 @@ export const MARKETPLACE_ADDONS: MarketplaceAddon[] = [
     category: 'debrid',
     tags: ['torrents', 'torbox'],
     requiresDebrid: true,
-    setupTemplate: 'https://torrentio.strem.fun/torbox={TB_API_KEY}',
+    setupTemplate: 'https://torrentio.strem.fun/providers=yts,eztv,rarbg,1337x,thepiratebay,kickasstorrents,torrentgalaxy,magnetdl,horriblesubs,nyaasi,tokyotosho,anidex|sort=qualitysize|limit=20|torbox={TB_API_KEY}',
     setupFields: [
       {
         key: 'TB_API_KEY',
