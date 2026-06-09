@@ -4,6 +4,7 @@ import { getUserConfig } from '../db/index.js';
 import { processStreams } from '../services/processor.js';
 import { formatStream } from '../services/formatter.js';
 import { fetchAnimeCatalog, ANIME_CATALOGS } from '../services/catalog.js';
+import { fetchStreamingCatalogMetas, isStreamingCatalog, STREAMING_CATALOGS } from '../services/streaming-catalogs.js';
 import { streamRateLimit } from '../middleware/ratelimit.js';
 import type { StremioManifest } from '@aio/core';
 
@@ -22,6 +23,7 @@ stremioRouter.get('/:userId/manifest.json', async (req: Request, res: Response) 
 
   const cfg = row.config;
   const enabledCount = (cfg.addons ?? []).filter((a: { enabled: boolean }) => a.enabled).length;
+  const hasTmdb = Boolean(process.env['TMDB_API_KEY']);
 
   const manifest: StremioManifest = {
     id: `com.aiostreams.user.${userId}`,
@@ -30,12 +32,22 @@ stremioRouter.get('/:userId/manifest.json', async (req: Request, res: Response) 
     description: `Aggregating ${enabledCount} addon(s). Powered by AIOStreams Clone.`,
     resources: ['stream', 'catalog'],
     types: ['movie', 'series'],
-    catalogs: ANIME_CATALOGS.map(c => ({
-      type: 'series' as const,
-      id: c.id,
-      name: c.name,
-      extra: [{ name: 'skip', isRequired: false }],
-    })),
+    catalogs: [
+      // Anime catalogs (Kitsu)
+      ...ANIME_CATALOGS.map(c => ({
+        type: 'series' as const,
+        id: c.id,
+        name: c.name,
+        extra: [{ name: 'skip', isRequired: false }],
+      })),
+      // Streaming platform catalogs (TMDB) — only when API key is configured
+      ...(hasTmdb ? STREAMING_CATALOGS.map(c => ({
+        type: c.stremioType,
+        id: c.id,
+        name: c.name,
+        extra: [{ name: 'skip', isRequired: false }],
+      })) : []),
+    ],
     idPrefixes: ['tt', 'kitsu:'],
     behaviorHints: {
       configurable: true,
@@ -75,23 +87,14 @@ stremioRouter.get(
 );
 
 // ─── Catalog ──────────────────────────────────────────────────────────────────
-// Matches both /catalog/:type/:id.json and /catalog/:type/:id/skip=N.json
+// Matches /catalog/:type/:id.json  and  /catalog/:type/:id/skip=N.json
 
 stremioRouter.get('/:userId/catalog/:type/*', async (req: Request, res: Response) => {
-  const type = String(req.params['type']);
-
-  // req.params['0'] = "aio-anime-airing.json" OR "aio-anime-airing/skip=30.json"
   const rawPath = String((req.params as Record<string, string>)['0'] ?? '');
   const segments = rawPath.split('/');
   const catalogId = segments[0].replace(/\.json$/, '');
 
-  // Only handle our anime catalogs (identified by ID prefix), not generic series requests
-  if (type !== 'series' || !catalogId.startsWith('aio-anime-')) {
-    res.json({ metas: [] });
-    return;
-  }
-
-  // Parse extras (e.g. "skip=30.json" → { skip: "30" })
+  // Parse skip extra (e.g. "skip=20.json")
   const extraStr = segments.slice(1).join('/').replace(/\.json$/, '');
   const extras: Record<string, string> = {};
   if (extraStr) {
@@ -103,7 +106,14 @@ stremioRouter.get('/:userId/catalog/:type/*', async (req: Request, res: Response
   const skip = parseInt(extras['skip'] ?? '0', 10) || 0;
 
   try {
-    const metas = await fetchAnimeCatalog(catalogId, skip);
+    let metas: unknown[] = [];
+
+    if (catalogId.startsWith('aio-anime-')) {
+      metas = await fetchAnimeCatalog(catalogId, skip);
+    } else if (isStreamingCatalog(catalogId)) {
+      metas = await fetchStreamingCatalogMetas(catalogId, skip);
+    }
+
     res.setHeader('Cache-Control', 'public, max-age=3600');
     res.json({ metas });
   } catch {
