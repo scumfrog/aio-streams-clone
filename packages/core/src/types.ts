@@ -15,7 +15,8 @@ export interface ParsedStream {
   seeders?: number;
   cached: boolean;
   languages: string[];
-  group?: string;      // release group
+  audioChannels?: string;  // '7.1' | '5.1' | '2.0' etc.
+  group?: string;          // release group
 }
 
 export interface Stream extends ParsedStream {

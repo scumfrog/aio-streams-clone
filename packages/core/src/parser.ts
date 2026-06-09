@@ -163,6 +163,15 @@ function parseLanguages(text: string): string[] {
   return [...langs];
 }
 
+// ─── Audio channels ───────────────────────────────────────────────────────────
+
+const AUDIO_CHANNELS_RE = /\b(7\.1|5\.1|2\.1|2\.0|1\.0)\b/;
+
+function parseAudioChannels(text: string): string | undefined {
+  const m = text.match(AUDIO_CHANNELS_RE);
+  return m ? m[1] : undefined;
+}
+
 // ─── Release group ────────────────────────────────────────────────────────────
 
 const GROUP_RE = /[-.]([A-Za-z0-9]{2,10})(?:\s|$)/;
@@ -193,6 +202,7 @@ export function parseStream(raw: Record<string, unknown>): Stream {
     seeders: parseSeeders(combined),
     cached: parseCached(combined),
     languages: parseLanguages(combined),
+    audioChannels: parseAudioChannels(combined),
     group: parseGroup(name),
   };
 
