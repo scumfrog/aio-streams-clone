@@ -83,7 +83,7 @@ export async function fetchAnimeCatalog(
   catalogId: string,
   skip = 0,
 ): Promise<StremioMetaItem[]> {
-  const base = `page[limit]=30&page[offset]=${skip}`;
+  const base = `page[limit]=20&page[offset]=${skip}`;
 
   switch (catalogId) {
     case 'aio-anime-airing':
