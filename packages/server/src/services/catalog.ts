@@ -43,7 +43,7 @@ function toMeta(item: KitsuItem): StremioMetaItem {
   const name = a.titles['en'] || a.titles['en_jp'] || a.canonicalTitle;
   return {
     id: `kitsu:${item.id}`,
-    type: 'anime',
+    type: 'series',
     name,
     poster: a.posterImage?.large ?? a.posterImage?.original,
     background: a.coverImage?.large ?? a.coverImage?.original,

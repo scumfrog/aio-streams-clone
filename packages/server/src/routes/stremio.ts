@@ -29,9 +29,9 @@ stremioRouter.get('/:userId/manifest.json', async (req: Request, res: Response) 
     name: cfg.name ? `AIO: ${cfg.name}` : 'AIOStreams Clone',
     description: `Aggregating ${enabledCount} addon(s). Powered by AIOStreams Clone.`,
     resources: ['stream', 'catalog'],
-    types: ['movie', 'series', 'anime'],
+    types: ['movie', 'series'],
     catalogs: ANIME_CATALOGS.map(c => ({
-      type: 'anime' as const,
+      type: 'series' as const,
       id: c.id,
       name: c.name,
       extra: [{ name: 'skip', isRequired: false }],
@@ -80,16 +80,16 @@ stremioRouter.get(
 stremioRouter.get('/:userId/catalog/:type/*', async (req: Request, res: Response) => {
   const type = String(req.params['type']);
 
-  // Only handle anime catalogs; return empty for anything else
-  if (type !== 'anime') {
-    res.json({ metas: [] });
-    return;
-  }
-
   // req.params['0'] = "aio-anime-airing.json" OR "aio-anime-airing/skip=30.json"
   const rawPath = String((req.params as Record<string, string>)['0'] ?? '');
   const segments = rawPath.split('/');
   const catalogId = segments[0].replace(/\.json$/, '');
+
+  // Only handle our anime catalogs (identified by ID prefix), not generic series requests
+  if (type !== 'series' || !catalogId.startsWith('aio-anime-')) {
+    res.json({ metas: [] });
+    return;
+  }
 
   // Parse extras (e.g. "skip=30.json" → { skip: "30" })
   const extraStr = segments.slice(1).join('/').replace(/\.json$/, '');
