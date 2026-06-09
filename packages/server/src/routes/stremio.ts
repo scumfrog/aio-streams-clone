@@ -2,6 +2,7 @@ import { Router } from 'express';
 import type { Request, Response } from 'express';
 import { getUserConfig } from '../db/index.js';
 import { processStreams } from '../services/processor.js';
+import { formatStream } from '../services/formatter.js';
 import { fetchAnimeCatalog, ANIME_CATALOGS } from '../services/catalog.js';
 import { streamRateLimit } from '../middleware/ratelimit.js';
 import type { StremioManifest } from '@aio/core';
@@ -63,7 +64,7 @@ stremioRouter.get(
     }
 
     try {
-      const streams = await processStreams(userId, type, id, row.config);
+      const streams = (await processStreams(userId, type, id, row.config)).map(formatStream);
       res.setHeader('Cache-Control', 'public, max-age=300');
       res.json({ streams });
     } catch (err) {

@@ -51,6 +51,7 @@ const configBodySchema = z.object({
     includeKeywords: z.array(z.string()).optional(),
     excludeCodecs: z.array(z.string()).optional(),
     languages: z.array(z.string()).optional(),
+    exclude3D: z.boolean().optional(),
   }).default({}),
   sorting: z.object({
     criteria: z.array(z.string()).default(['cached_first', 'resolution_desc', 'quality_desc']),

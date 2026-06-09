@@ -59,6 +59,7 @@ export interface FilterConfig {
   includeKeywords?: string[];
   excludeCodecs?: Codec[];
   languages?: string[];
+  exclude3D?: boolean;
 }
 
 export type SortCriterion =

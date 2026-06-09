@@ -58,6 +58,12 @@ export function filterStreams(streams: Stream[], config: FilterConfig): Stream[]
       if (!hasLang) return false;
     }
 
+    // 3D stream exclusion
+    if (config.exclude3D) {
+      const haystack = `${s.name} ${s.title}`.toLowerCase();
+      if (/\b(3d|sbs|hsbs|h-sbs|hou|half-ou|half-sbs)\b/.test(haystack)) return false;
+    }
+
     // Keyword exclusion
     if (config.excludeKeywords && config.excludeKeywords.length > 0) {
       const haystack = `${s.name} ${s.title}`.toLowerCase();
